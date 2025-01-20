@@ -180,7 +180,7 @@ int main(int argc, char *argv[]){
     buff = (char*) malloc(BUFFER_SZ * sizeof(char));
     if (buff == NULL) {
         printf("Failed to allocate %d bytes for buff.", BUFFER_SZ);
-        exit(2);
+        exit(99);
     }
 
     user_str_len = setup_buff(buff, input_string, BUFFER_SZ);
