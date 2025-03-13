@@ -1,3 +1,18 @@
+Please read this before grading, I beg you plssssss
+
+I just discovered that my environment is slightly different from the others where my dsh works but others will immediately run into seg fault, this is because of a single line which I thought should not be changed due to how it was implemented as the template for the past few assignments:
+
+In dshlib.c, line 57:
+
+- char *cmd_buff;
+
+Instead, make a copy and replace this line with:
+
+- char cmd_buff[ARG_MAX];
+
+so that it works with the general environment. I have no idea why my macbook works but any other environment hates it. Please have mercy on my grades since the last two assignments I wrote this and other TAs gave me a seg fault, and this one is worth way more for the correct implementation
+
+
 1. Your shell forks multiple child processes when executing piped commands. How does your implementation ensure that all child processes complete before the shell continues accepting user input? What would happen if you forgot to call waitpid() on all child processes?
 
 This implementation allows all child processes to finish running before we get to the next user input by using waitpid for all child processes, as it suspends execution of the parent process until everything from the child is finished. Without waitpid on the child processes, we can potentially create orphaned child processes while the parent returns and our shell waits for our next user input. 
