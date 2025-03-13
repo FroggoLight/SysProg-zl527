@@ -10,7 +10,7 @@ Instead, make a copy and replace this line with:
 
 - char cmd_buff[ARG_MAX];
 
-so that it works with the general environment. I have no idea why my macbook works but any other environment hates it. Please have mercy on my grades since the last two assignments I wrote this and other TAs gave me a seg fault, and this one is worth way more for the correct implementation
+so that it works with the general environment. I have no idea why my macbook works but any other environment hates it. Please have mercy on my grades since the last two assignments I wrote this and other TAs gave me a seg fault, and this one is worth way more for the correct implementation. The general implementation works, so use the older version of the c files before this special commit and perform the replace stated above. Thank you very much. 
 
 
 1. Your shell forks multiple child processes when executing piped commands. How does your implementation ensure that all child processes complete before the shell continues accepting user input? What would happen if you forgot to call waitpid() on all child processes?
