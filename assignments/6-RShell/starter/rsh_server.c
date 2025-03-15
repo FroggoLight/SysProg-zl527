@@ -58,7 +58,7 @@ int start_server(char *ifaces, int port, int is_threaded){
 
     svr_socket = boot_server(ifaces, port);
     if (svr_socket < 0){
-        int err_code = svr_socket;  //server socket will carry error code
+        int err_code = svr_socket; 
         return err_code;
     }
 
@@ -124,21 +124,18 @@ int boot_server(char *ifaces, int port){
 
     // TODO set up the socket - this is very similar to the demo code
 
-        // Create the server socket
         svr_socket = socket(AF_INET, SOCK_STREAM, 0);
         if (svr_socket == -1) {
             perror("socket creation failed");
             return ERR_RDSH_COMMUNICATION;
         }
     
-        // Set socket options to reuse address
         if (setsockopt(svr_socket, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) == -1) {
             perror("setsockopt failed");
             close(svr_socket);
             return ERR_RDSH_COMMUNICATION;
         }
     
-        // Configure address structure
         addr.sin_family = AF_INET;
         if (strcmp(ifaces, "0.0.0.0") == 0) {
             addr.sin_addr.s_addr = INADDR_ANY;
@@ -221,14 +218,13 @@ int process_cli_requests(int svr_socket){
     socklen_t addr_len = sizeof(client_addr);
 
     while(1){
-        // Accept an incoming client connection
+
         cli_socket = accept(svr_socket, (struct sockaddr *)&client_addr, &addr_len);
         if (cli_socket < 0) {
             perror("accept failed");
             return ERR_RDSH_COMMUNICATION;
         }
 
-        // Execute client requests
         rc = exec_client_requests(cli_socket);
 
         if (rc == OK_EXIT) {
@@ -239,7 +235,6 @@ int process_cli_requests(int svr_socket){
         } else if (rc == ERR_RDSH_COMMUNICATION) {
             perror("Error communicating with client");
         }
-        // Close the client socket after handling requests
         close(cli_socket);
 
     }
@@ -309,10 +304,6 @@ int exec_client_requests(int cli_socket) {
                 if (exit_code != WARN_RDSH_NOT_IMPL) {
                     printf("Pipeline execution finished with exit code: %d\n", exit_code);
                 } 
-
-                else {
-                    fprintf(stderr, "rsh_execute_pipeline not implemented yet.\n");
-                }
 
                 if (send_message_eof(cli_socket) != OK) {
                     perror("Error sending EOF after pipeline");
@@ -507,7 +498,6 @@ int rsh_execute_pipeline(int cli_sock, command_list_t *clist) {
     Built_In_Cmds bi_cmd;
     int exit_code;
 
-    // Create all necessary pipes
     for (int i = 0; i < clist->num - 1; i++) {
         if (pipe(pipes[i]) == -1) {
             perror("pipe");
@@ -521,55 +511,43 @@ int rsh_execute_pipeline(int cli_sock, command_list_t *clist) {
             perror("fork failed");
             return ERR_RDSH_COMMUNICATION;
         } 
-        else if (pids[i] == 0) {  // Child process
+        else if (pids[i] == 0) {  
             if (i == 0) { 
-                // First command: Redirect input from client socket
                 dup2(cli_sock, STDIN_FILENO);
             } else {  
-                // Read from previous pipe
                 dup2(pipes[i - 1][0], STDIN_FILENO);
             }
 
             if (i == clist->num - 1) {  
-                // Last command: Redirect output to client socket
                 dup2(cli_sock, STDOUT_FILENO);
                 dup2(cli_sock, STDERR_FILENO);
             } else {  
-                // Write to next pipe
                 dup2(pipes[i][1], STDOUT_FILENO);
             }
 
-            // Close all pipes in child
             for (int j = 0; j < clist->num - 1; j++) {
                 close(pipes[j][0]);
                 close(pipes[j][1]);
             }
 
-            // Execute command
             execvp(clist->commands[i].argv[0], clist->commands[i].argv);
             perror("execvp failed");
             exit(EXIT_FAILURE);
         }
     }
 
-
-    // Parent process: close all pipe ends
     for (int i = 0; i < clist->num - 1; i++) {
         close(pipes[i][0]);
         close(pipes[i][1]);
     }
 
-    // Wait for all children
     for (int i = 0; i < clist->num; i++) {
         waitpid(pids[i], &pids_st[i], 0);
     }
 
-    //by default get exit code of last process
-    //use this as the return value
     exit_code = WEXITSTATUS(pids_st[clist->num - 1]);
     for (int i = 0; i < clist->num; i++) {
-        //if any commands in the pipeline are EXIT_SC
-        //return that to enable the caller to react
+
         if (WEXITSTATUS(pids_st[i]) == EXIT_SC)
             exit_code = EXIT_SC;
     }
