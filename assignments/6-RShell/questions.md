@@ -1,3 +1,5 @@
+Please read this: I have yet again found a new problem that my environment somehow does not mind but does it differently than the rest. I have implemented the fix which should allow multiple runs in a single session. I swear if my macbook messes me up for this class I will die internally and cry for a week (my previous assignments got nuked because of this macbook "not" caring about uninitialized stuff and how memory allocation works)
+
 1. How does the remote client determine when a command's output is fully received from the server, and what techniques can be used to handle partial reads or ensure complete message transmission?
 
 We used the send_message_eof where we specified that when the client reads the specified EOF character it will know that the output has been fully received. We can also implement timeout where we give the server a set time for the response

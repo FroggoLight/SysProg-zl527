@@ -173,7 +173,9 @@ int build_cmd_buff(char *cmd_line, cmd_buff_t *cmd)
     cmd->argv[arg_index] = malloc(copy_len + 1);
     //printf("'%s'\n", &cmd_line[start_index]);
     strncpy(cmd->_cmd_buffer, &cmd_line[start_index], copy_len);
+    cmd->_cmd_buffer[copy_len] = '\0';
     strncpy(cmd->argv[arg_index], &cmd_line[start_index], copy_len);
+    cmd->argv[arg_index][copy_len] = '\0';
     str_index++;
     arg_index++;
     cmd->argc++;
@@ -191,6 +193,7 @@ int build_cmd_buff(char *cmd_line, cmd_buff_t *cmd)
             cmd->argv[arg_index] = malloc(copy_len);
             //printf("%s\n", &cmd_line[start_index]);
             strncpy(cmd->argv[arg_index], &cmd_line[start_index + 1], copy_len - 1);
+            cmd->argv[arg_index][copy_len - 1] = '\0';
             str_index++;
             arg_index++;
             cmd->argc++;
@@ -201,6 +204,7 @@ int build_cmd_buff(char *cmd_line, cmd_buff_t *cmd)
             cmd->argv[arg_index] = malloc(copy_len + 1);
             //printf("'%s'\n", &cmd_line[start_index]);
             strncpy(cmd->argv[arg_index], &cmd_line[start_index], copy_len);
+            cmd->argv[arg_index][copy_len] = '\0';
             str_index++;
             arg_index++;
             cmd->argc++;
